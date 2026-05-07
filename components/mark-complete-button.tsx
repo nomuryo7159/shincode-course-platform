@@ -1,28 +1,33 @@
-"use client"
+"use client";
 
-import { useTransition } from "react"
-import { markLessonComplete, markLessonIncomplete } from "@/app/actions/progress"
+import { useTransition } from "react";
+import {
+  markLessonComplete,
+  markLessonIncomplete,
+} from "@/app/actions/progress";
 
 type MarkCompleteButtonProps = {
-  lessonId: string
-  isCompleted: boolean
-}
+  lessonId: string;
+  courseId: string;
+  isCompleted: boolean;
+};
 
 export function MarkCompleteButton({
   lessonId,
+  courseId,
   isCompleted,
 }: MarkCompleteButtonProps) {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
     startTransition(async () => {
       if (isCompleted) {
-        await markLessonIncomplete(lessonId)
+        await markLessonIncomplete(lessonId, courseId);
       } else {
-        await markLessonComplete(lessonId)
+        await markLessonComplete(lessonId, courseId);
       }
-    })
-  }
+    });
+  };
 
   return (
     <button
@@ -39,11 +44,21 @@ export function MarkCompleteButton({
           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
         </svg>
       ) : (
-        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
       )}
       {isPending ? "処理中..." : isCompleted ? "完了済み" : "完了にする"}
     </button>
-  )
+  );
 }

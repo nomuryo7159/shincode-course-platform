@@ -1,14 +1,14 @@
-import { createClient } from "@/lib/supabase/server"
-import Link from "next/link"
-import { PublishToggle } from "@/components/admin/publish-toggle"
-import { DeleteCourseButton } from "@/components/admin/delete-course-button"
+import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
+import { PublishToggle } from "@/components/admin/publish-toggle";
+import { DeleteCourseButton } from "@/components/admin/delete-course-button";
 
 export default async function AdminCoursesPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const { data: courses } = await supabase
     .from("courses")
-    .select("*")
-    .order("created_at", { ascending: false })
+    .select("id, title, is_published, created_at")
+    .order("created_at", { ascending: false });
 
   return (
     <div>
@@ -77,11 +77,9 @@ export default async function AdminCoursesPage() {
           </tbody>
         </table>
         {(courses ?? []).length === 0 && (
-          <p className="py-8 text-center text-gray-500">
-            講座がまだありません
-          </p>
+          <p className="py-8 text-center text-gray-500">講座がまだありません</p>
         )}
       </div>
     </div>
-  )
+  );
 }

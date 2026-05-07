@@ -1,16 +1,16 @@
-"use server"
+"use server";
 
-import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
-export async function markLessonComplete(lessonId: string) {
-  const supabase = await createClient()
+export async function markLessonComplete(lessonId: string, courseId: string) {
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Unauthorized")
+    throw new Error("Unauthorized");
   }
 
   await supabase.from("progress").upsert(
@@ -20,27 +20,27 @@ export async function markLessonComplete(lessonId: string) {
       completed: true,
       completed_at: new Date().toISOString(),
     },
-    { onConflict: "user_id,lesson_id" }
-  )
+    { onConflict: "user_id,lesson_id" },
+  );
 
-  revalidatePath("/courses", "layout")
+  revalidatePath(`/courses/${courseId}`);
 }
 
-export async function markLessonIncomplete(lessonId: string) {
-  const supabase = await createClient()
+export async function markLessonIncomplete(lessonId: string, courseId: string) {
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Unauthorized")
+    throw new Error("Unauthorized");
   }
 
   await supabase
     .from("progress")
     .update({ completed: false, completed_at: null })
     .eq("user_id", user.id)
-    .eq("lesson_id", lessonId)
+    .eq("lesson_id", lessonId);
 
-  revalidatePath("/courses", "layout")
+  revalidatePath(`/courses/${courseId}`);
 }

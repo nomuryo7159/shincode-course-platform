@@ -1,39 +1,40 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server";
+import Image from "next/image";
 
 type AdminUser = {
-  id: string
-  email: string
-  avatar_url: string | null
-  role: string
-  created_at: string
-  last_sign_in_at: string | null
-}
+  id: string;
+  email: string;
+  avatar_url: string | null;
+  role: string;
+  created_at: string;
+  last_sign_in_at: string | null;
+};
 
 export default async function AdminUsersPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // Get all users via admin function
-  const { data: users } = await supabase.rpc("get_users_for_admin")
+  const { data: users } = await supabase.rpc("get_users_for_admin");
 
   // Get total lesson count
   const { count: totalLessons } = await supabase
     .from("lessons")
-    .select("*", { count: "exact", head: true })
+    .select("*", { count: "exact", head: true });
 
   // Get progress for all users
   const { data: progressData } = await supabase
     .from("progress")
     .select("user_id")
-    .eq("completed", true)
+    .eq("completed", true);
 
   // Count completions per user
   const completionsByUser = (progressData ?? []).reduce(
     (acc: Record<string, number>, row) => {
-      acc[row.user_id] = (acc[row.user_id] ?? 0) + 1
-      return acc
+      acc[row.user_id] = (acc[row.user_id] ?? 0) + 1;
+      return acc;
     },
-    {}
-  )
+    {},
+  );
 
   return (
     <div>
@@ -52,15 +53,17 @@ export default async function AdminUsersPage() {
           </thead>
           <tbody className="divide-y">
             {((users ?? []) as AdminUser[]).map((user) => {
-              const completed = completionsByUser[user.id] ?? 0
+              const completed = completionsByUser[user.id] ?? 0;
               return (
                 <tr key={user.id}>
                   <td className="py-3">
                     <div className="flex items-center gap-2">
                       {user.avatar_url ? (
-                        <img
+                        <Image
                           src={user.avatar_url}
                           alt=""
+                          width={24}
+                          height={24}
                           className="h-6 w-6 rounded-full"
                         />
                       ) : (
@@ -88,11 +91,13 @@ export default async function AdminUsersPage() {
                   </td>
                   <td className="py-3 text-gray-500">
                     {user.last_sign_in_at
-                      ? new Date(user.last_sign_in_at).toLocaleDateString("ja-JP")
+                      ? new Date(user.last_sign_in_at).toLocaleDateString(
+                          "ja-JP",
+                        )
                       : "-"}
                   </td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>
@@ -103,5 +108,5 @@ export default async function AdminUsersPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

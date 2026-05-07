@@ -1,22 +1,9 @@
-import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
-import { UserMenu } from "./user-menu"
+import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth";
+import { UserMenu } from "./user-menu";
 
 export async function Header() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  let isAdmin = false
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single()
-    isAdmin = profile?.role === "admin"
-  }
+  const { user, isAdmin } = await getCurrentUser();
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-white shadow-sm">
@@ -67,5 +54,5 @@ export async function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
