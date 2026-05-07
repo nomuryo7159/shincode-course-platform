@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import { createClient } from "@/lib/supabase/client"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import Link from "next/link";
 
-export function LoginForm() {
-  const searchParams = useSearchParams()
-  const next = searchParams.get("next") || "/"
+export function RegisterForm() {
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/";
 
-  const handleLogin = async () => {
-    const supabase = createClient()
+  const handleRegister = async () => {
+    const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
-    })
-  }
+    });
+  };
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
@@ -27,15 +27,15 @@ export function LoginForm() {
               <span className="text-lg font-bold text-white">C</span>
             </div>
             <h1 className="text-xl font-extrabold text-[var(--color-foreground)]">
-              ログイン
+              新規登録
             </h1>
             <p className="mt-1 text-sm text-[var(--color-muted)]">
-              アカウントにログインして学習を続けましょう
+              アカウントを作成して学習を始めましょう
             </p>
           </div>
 
           <button
-            onClick={handleLogin}
+            onClick={handleRegister}
             className="flex w-full items-center justify-center gap-3 rounded-md border-2 border-[var(--color-border)] bg-white px-4 py-3 text-sm font-bold text-[var(--color-foreground)] hover:bg-[var(--color-surface)] hover:border-[var(--color-muted)] transition-colors cursor-pointer"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -56,24 +56,24 @@ export function LoginForm() {
                 fill="#EA4335"
               />
             </svg>
-            Googleでログイン
+            Googleで新規登録
           </button>
 
           <p className="mt-6 text-center text-xs text-[var(--color-muted)]">
-            ログインすることで、すべての動画レッスンにアクセスできます
+            登録すると、すべての動画レッスンにアクセスできます
           </p>
 
           <p className="mt-4 text-center text-sm text-[var(--color-muted)]">
-            アカウントをお持ちでないですか？{" "}
+            すでにアカウントをお持ちですか？{" "}
             <Link
-              href="/register"
+              href="/login"
               className="font-bold text-[var(--color-primary)] hover:underline"
             >
-              新規登録
+              ログイン
             </Link>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
